@@ -13,7 +13,7 @@ play-jaxrs tradeoffs
 - using reflection for action dispatching instead of matching generated route rules   
 
 
-- since there are no router files to compile and sbt can not invalidate big parts of the object graph, compile times are significantly better than the standard solution
+- since there are no router files to compile and sbt can not invalidate big parts of the object graph, compile times are significantly better than using the standard solution
 
 
 - only supports java projects for two reasons: 
@@ -24,6 +24,8 @@ play-jaxrs tradeoffs
 
 
 - reflection based dispatching means no reverse routing or compile time checks for route matching 
+
+- since there is no route file, assets controller is configured via the config file 
 
 
 what's supported?
