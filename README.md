@@ -10,7 +10,7 @@ play-jaxrs tradeoffs
 ====================
 
 
-- using reflection for action dispatching instead of static binding   
+- using reflection for action dispatching instead of matching generated route rules   
 
 
 - since there are no router files to compile and sbt can not invalidate big parts of the object graph, compile times are significantly better than the standard solution
