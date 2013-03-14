@@ -59,7 +59,7 @@ public static Result id(@PathParam("id") String id, @QueryParam("foo") Optional<
 - `@Provides`
 - `@Consumes`
 
-plus all the standard play features should be working (i.e. action composition etc.).
+plus all the standard play features should be working (i.e. action composition, assets serving etc.).
 
 
 Curious?
