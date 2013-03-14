@@ -5,15 +5,21 @@ tl;dr
 
 use this router instead of the built-in one if you are interested in a native java solution that also significantly improves build times. The price you will need to pay for this is lack of reverse routing and compile time routing checks.  
 
+
 play-jaxrs tradeoffs
 ====================
 
+
 - using reflection for action dispatching instead of static binding   
+
 - since there are no router files to compile and sbt can not invalidate big parts of the object graph, compile times are significantly better than the standard solution
+
 - only supports java projects for two reasons: 
 -- annotations are primary used in java 
 -- scala users already have a very scala-centric routing solution
+
 - route definitions are provided inline. Some people prefer this over an external DSL, especially in a backend service-only context
+
 - reflection based dispatching means no reverse routing or compile time checks
 
 
@@ -21,10 +27,15 @@ what's supported?
 =================
 
 - `@GET`,`@POST`, `@PUT`, `@DELETE`, `@OPTIONS`
+
 - `@ApplicationPath` on your `Global` class can define a context (think servlet context)
+
 - `@Path` works both on classes and methods
+
 - URI parts can be captured (i.e. `/user/id/{id}`) 
+
 - the captured field can only be a String i.e.  
+
 ```
     @GET
     @Path("/id/{id}")
@@ -32,13 +43,15 @@ what's supported?
         ...        
     }
 ```
+
 - `@QueryParam` captured as `com.google.common.base.Optional` i.e.
+
 ```
-    @GET
-    @Path("/id/{id}")
-    public static Result id(@PathParam("id") String id, @QueryParam("foo") Optional<String> foo) {
-        return ok("id=" + id + " query=" + foo.or("booo")+" delegate="+session().get("delegate"));
-    }
+@GET
+@Path("/id/{id}")
+public static Result id(@PathParam("id") String id, @QueryParam("foo") Optional<String> foo) {
+    return ok("id=" + id + " query=" + foo.or("booo")+" delegate="+session().get("delegate"));
+}
 ```
 - `@Provides`
 - `@Consumes`
