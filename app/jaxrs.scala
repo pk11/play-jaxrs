@@ -42,7 +42,7 @@ object Router {
 
   private lazy val urlParamCapture = "\\{(.*?)\\}"
 
-  private def slashOrNot(s: String) = if (s.startsWith("/")) s else "/"+s
+  private def slashOrNot(s: String) = if (s.startsWith("/")) s else "/" + s
 
   private def findHttpMethodAnnotation(httpMethod: String): Class[_ <: java.lang.annotation.Annotation] = httpMethod match {
     case "GET" => classOf[GET]
@@ -66,7 +66,7 @@ object Router {
     def toMetaData(m: Method): Option[(Method, Map[String, String])] = {
       val consumes = Option(m.getAnnotation(classOf[Consumes])).map(_.value).getOrElse(Array(contentType))
       if (consumes.contains(contentType)) {
-        val mPath = Option(m.getAnnotation(classOf[Path])).map(p=> slashOrNot(p.value))
+        val mPath = Option(m.getAnnotation(classOf[Path])).map(p => slashOrNot(p.value))
         val combined = rootPathPrefix + mPath.getOrElse("")
         //any variables?
         if (combined.contains("{") && combined.contains("}")) {
@@ -88,14 +88,14 @@ object Router {
         lazy val queryParam = arg.find(_.isInstanceOf[QueryParam]).map(_.asInstanceOf[QueryParam])
         if (pathParam.isDefined) {
           extracedArgumentValues.get(pathParam.get.value).getOrElse(throw new IllegalArgumentException("can not find annotation value for argument " + pathParam.get.value.toString + "in " + targetClass.toString + "#" + method.toString))
-        } else if (queryParam.isDefined) 
+        } else if (queryParam.isDefined)
           Optional.fromNullable(r.getQueryString(queryParam.get.value))
         else throw new IllegalArgumentException("can not find an appropriate JAX-RC annotation for an argument for method:" + targetClass.toString + "#" + method.toString)
       }
       return method.invoke(global.getControllerInstance(targetClass), argValues: _*).asInstanceOf[play.mvc.Result]
     } catch {
       case cause: InvocationTargetException => {
-        println("Exception occured while trying to invoke: "+targetClass.getName+"#"+method.getName+" with "+extracedArgumentValues + " for uri:" + r.path)
+        println("Exception occured while trying to invoke: " + targetClass.getName + "#" + method.getName + " with " + extracedArgumentValues + " for uri:" + r.path)
         throw cause.getCause
       }
     }
@@ -115,17 +115,17 @@ object Router {
    *
    */
   def handlerFor(global: play.GlobalSettings, r: play.mvc.Http.RequestHeader): Handler = {
-    
+
     val appPath = Option(global.getClass.getAnnotation(classOf[ApplicationPath])).map(_.value).getOrElse("")
 
     assetServing.flatMap { assetsServing =>
       val mapping = assetsServing.split(",")
-      if (mapping.size == 2 && r.path.startsWith(mapping(0))) 
+      if (mapping.size == 2 && r.path.startsWith(mapping(0)))
         Some(controllers.Assets.at(path = mapping(1), r.path.replaceFirst(mapping(0), "")))
       else
         None
     }.getOrElse {
-      
+
       val potentialClass = findLongestMatch(classes, r, appPath)
       potentialClass.map { targetClassWithPath =>
         val httpMethodClass = findHttpMethodAnnotation(r.method.toUpperCase)

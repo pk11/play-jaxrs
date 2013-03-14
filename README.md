@@ -1,4 +1,4 @@
-`play-jaxrs` is providing an alternative router for play(2.1) java apps by implementing (a subset of) the JAX-RS specification on top of play. 
+`play-jaxrs` is providing an alternative router for play(2.1) java apps by implementing (a subset of) the [JAX-RS](http://jax-rs-spec.java.net/) specification on top of play. 
 
 tl;dr
 =====
@@ -12,15 +12,18 @@ play-jaxrs tradeoffs
 
 - using reflection for action dispatching instead of static binding   
 
+
 - since there are no router files to compile and sbt can not invalidate big parts of the object graph, compile times are significantly better than the standard solution
 
+
 - only supports java projects for two reasons: 
--- annotations are primary used in java 
--- scala users already have a very scala-centric routing solution
+  - annotations are primary used in java 
+  - scala users already have a very scala-centric routing solution
 
 - route definitions are provided inline. Some people prefer this over an external DSL, especially in a backend service-only context
 
-- reflection based dispatching means no reverse routing or compile time checks
+
+- reflection based dispatching means no reverse routing or compile time checks for route matching 
 
 
 what's supported?
@@ -50,7 +53,7 @@ what's supported?
 @GET
 @Path("/id/{id}")
 public static Result id(@PathParam("id") String id, @QueryParam("foo") Optional<String> foo) {
-    return ok("id=" + id + " query=" + foo.or("booo")+" delegate="+session().get("delegate"));
+    return ok("id=" + id + " query=" + foo.or("booo"));
 }
 ```
 - `@Provides`
@@ -61,7 +64,7 @@ plus all the standard play features should be working (i.e. action composition e
 
 Curious?
 =========
-- check out the examples/specs
+- check out the [examples] (https://github.com/pk11/play-jaxrs/blob/master/app/controllers/Application.java)/[specs] (https://github.com/pk11/play-jaxrs/tree/master/test)
 
 
 How to install
