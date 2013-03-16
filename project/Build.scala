@@ -14,7 +14,9 @@ object ApplicationBuild extends Build {
     javaCore)
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-
+    unmanagedSourceDirectories in Compile <++= baseDirectory { base =>
+       Seq(base / "src/main/scala") },
+	
     organization := "org.pk11",
 
     publishMavenStyle := true,
