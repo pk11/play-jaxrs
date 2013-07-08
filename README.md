@@ -1,4 +1,4 @@
-`play-jaxrs` is providing an alternative router for play(2.1) java apps by implementing (a subset of) the [JAX-RS](http://jax-rs-spec.java.net/) specification on top of play. 
+`play-jaxrs` is providing an alternative router for play `2.1.2` (and above) java apps by implementing (a subset of) the [JAX-RS](http://jax-rs-spec.java.net/) specification on top of play. 
 
 tl;dr
 =====

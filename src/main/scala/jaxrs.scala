@@ -1,7 +1,7 @@
 package org.pk11.jaxrs
 
 import play.api.mvc.{ Result, Handler }
-import play.core.j.JavaAction
+import play.core.j.{JavaAction,JavaActionAnnotations}
 import org.reflections.{ Reflections, ReflectionUtils }
 import org.reflections.util.{ ClasspathHelper, ConfigurationBuilder, FilterBuilder }
 import org.reflections.scanners.{ TypeAnnotationsScanner }
@@ -30,6 +30,7 @@ object Router {
 
   private lazy val routerPackage = play.api.Play.maybeApplication.flatMap(_.configuration.getString("jaxrc.package")).getOrElse("controllers")
   private lazy val assetServing = play.api.Play.maybeApplication.flatMap(_.configuration.getString("jaxrc.assets.serving"))
+  private lazy val appClassloader = play.api.Play.maybeApplication.map(_.classloader).getOrElse(throw new RuntimeException("the play app's classloader should be available at this point"))
 
   private lazy val ref = new Reflections(
     new ConfigurationBuilder()
@@ -37,8 +38,7 @@ object Router {
       .setScanners(new TypeAnnotationsScanner)
       .setUrls(ClasspathHelper.forPackage(routerPackage)))
 
-  //TODO: find out why ref.getTypesAnnotatedWith(classOf[Path]) is not working  
-  private lazy val classes = ref.getStore.getTypesAnnotatedWith(classOf[Path].getName).asScala.map(Class.forName(_)).toSet
+  private lazy val classes = ref.getStore.getTypesAnnotatedWith(classOf[Path].getName).asScala.map(appClassloader.loadClass(_)).toSet
 
   private lazy val urlParamCapture = "\\{(.*?)\\}"
 
@@ -137,12 +137,12 @@ object Router {
 
           //produce javaAction
           new JavaAction {
+            val annotations =  new JavaActionAnnotations(targetClassWithPath._1,methodWithContext._1)
+            val parser = annotations.parser
             def invocation: play.mvc.Result = {
               lazy val result = invokeMethod(targetClassWithPath._1, global, methodWithContext._1, methodWithContext._2, r)
               produces.map(p => new WrapProducer(p.value()(0).toString, result)).getOrElse(result)
             }
-            def controller: Class[_] = targetClassWithPath._1
-            def method: java.lang.reflect.Method = methodWithContext._1
           }
         }.getOrElse(null)
       }.getOrElse(null)
