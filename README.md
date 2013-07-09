@@ -89,11 +89,14 @@ to your ```project/Build.scala``` file's ```app dependencies``` section.
 
 should be part of your settings
 
-4) finally, set it up in your ```Global``` class:
+4) edit `conf/play.plugins`
+`1500:org.pk11.jaxrs.RouterPlugin`
+
+5) finally, set it up in your ```Global``` class:
 ```
   @Override 
-  public play.api.mvc.Handler onRouteRequest(RequestHeader request) {
-     return org.pk11.jaxrs.Router.handlerFor(this, request);
+   public play.api.mvc.Handler onRouteRequest(RequestHeader request) {
+     return Play.application().plugin(org.pk11.jaxrs.RouterPlugin.class).handlerFor(this, request);
   }
 ```  
 

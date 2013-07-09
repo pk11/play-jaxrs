@@ -1,7 +1,7 @@
 package org.pk11.jaxrs
 
 import play.api.mvc.{ Result, Handler }
-import play.core.j.{JavaAction,JavaActionAnnotations}
+import play.core.j.{ JavaAction, JavaActionAnnotations }
 import org.reflections.{ Reflections, ReflectionUtils }
 import org.reflections.util.{ ClasspathHelper, ConfigurationBuilder, FilterBuilder }
 import org.reflections.scanners.{ TypeAnnotationsScanner }
@@ -13,6 +13,18 @@ import java.lang.annotation.Annotation
 import com.google.common.base.Predicates
 import com.google.common.base.Optional
 
+class RouterPlugin(app: play.api.Application) extends play.api.Plugin {
+
+  private lazy val router = new Router()
+
+  override lazy val enabled = {
+    !app.configuration.getString("jaxrsplugin").filter(_ == "disabled").isDefined
+  }
+
+  def handlerFor(global: play.GlobalSettings, r: play.mvc.Http.RequestHeader): Handler = router.handlerFor(global, r)
+
+}
+
 /**
  * Provides an alterantive, JAX-RS based routing mechanism for java Play applications
  * usage:
@@ -20,13 +32,13 @@ import com.google.common.base.Optional
  *    public class Global extends GlobalSettings {
  *      @Override
  *      public play.api.mvc.Handler onRouteRequest(RequestHeader request) {
- *          return org.pk11.jaxrs.Router.handlerFor(this, request);
- *       }
+ *        return Play.application().plugin(org.pk11.jaxrs.RouterPlugin.class).handlerFor(this, request);
+ *      }
  *    }
  *
  * }}}
  */
-object Router {
+class Router {
 
   private lazy val routerPackage = play.api.Play.maybeApplication.flatMap(_.configuration.getString("jaxrc.package")).getOrElse("controllers")
   private lazy val assetServing = play.api.Play.maybeApplication.flatMap(_.configuration.getString("jaxrc.assets.serving"))
@@ -137,7 +149,7 @@ object Router {
 
           //produce javaAction
           new JavaAction {
-            val annotations =  new JavaActionAnnotations(targetClassWithPath._1,methodWithContext._1)
+            val annotations = new JavaActionAnnotations(targetClassWithPath._1, methodWithContext._1)
             val parser = annotations.parser
             def invocation: play.mvc.Result = {
               lazy val result = invokeMethod(targetClassWithPath._1, global, methodWithContext._1, methodWithContext._2, r)

@@ -9,8 +9,8 @@ public class Global extends GlobalSettings {
     Logger.info("Application has started");
   } 
   @Override 
-  public play.api.mvc.Handler onRouteRequest(RequestHeader request) {
-     return org.pk11.jaxrs.Router.handlerFor(this, request);
+   public play.api.mvc.Handler onRouteRequest(RequestHeader request) {
+     return Play.application().plugin(org.pk11.jaxrs.RouterPlugin.class).handlerFor(this, request);
   }
   @Override
   public void onStop(Application app) {
