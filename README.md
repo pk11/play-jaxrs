@@ -78,7 +78,7 @@ you can install `play-jaxrs` in three easy steps:
 
 2) in ```project/Build.scala``` add
  
- ```"org.pk11" %% "jax-rs" % "0.5"``` 
+ ```"org.pk11" %% "jax-rs" % "0.6"``` 
 
 to your ```project/Build.scala``` file's ```app dependencies``` section.
 
